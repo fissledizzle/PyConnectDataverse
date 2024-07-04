@@ -1,46 +1,43 @@
-# pip install pandas # if needed
-
 import pandas as pd
 import authenticate_with_msal
 import json
 
 # Parameters
-PathToEnvironmentJSON = "example-env.json"
-EntityBeingAddedTo = "contacts"
-PathToCSVOfRecords = "data\pcd_update_records.csv"
+path_to_environment_json = "env_iony_sandbox.json"
+target_table = "iony_recipes"
+path_to_csv_of_records = "data\pcd_update_records.csv"
 # Column names in CSV must match EntityM and EntityN above
 
 # Getting access token.
-authentication = authenticate_with_msal.getAuthenticatedSession(PathToEnvironmentJSON)
-session = authentication[0]
-environmentURI = authentication[1]
+session, environment_uri = authenticate_with_msal.get_authenticated_session(path_to_environment_json, filetype='json')
+
 session.headers.update({'If-Match': '*'})
 
 # reading the CSV
-df = pd.read_csv(PathToCSVOfRecords)
-records = json.loads(df.drop(columns='GUID').to_json(orient = "records"))
+df = pd.read_csv(path_to_csv_of_records)
+records = json.loads(df.drop(columns='GUID').to_json(orient="records"))
 
 successful_updates = 0
 failures = 0
 expected_updates = len(df)
 
 for index, row in df.iterrows():
-    
+
     guid = row['GUID']
-    request_uri = f'{environmentURI}api/data/v9.2/{EntityBeingAddedTo}({guid})'
+    request_uri = f'{environment_uri}api/data/v9.2/{target_table}({guid})'
     post_json = records[index]
 
-    r = session.patch(request_uri, json = post_json)
-    
-    if r.status_code != 204:
+    response = session.patch(request_uri, json=post_json)
+
+    if response.status_code != 204:
         failures += 1
-        raw = r.content.decode('utf-8')
-        print(f'Error updating {guid}. Error {r.status_code}: \n{raw}\n')
-    
+        raw = response.content.decode('utf-8')
+        print(f'Error updating {guid}. Error {response.status_code}: \n{raw}\n')
+
     else:
         successful_updates += 1
-        
+
     if index % 10 == 0:
         print(f"Processed: {index + 1}")
-        
-print(f'{successful_updates} UPDATES MADE OF {expected_updates} EXPECTED UPDATES.\n{failures} FAILURES.') 
+
+print(f'{successful_updates} UPDATES MADE OF {expected_updates} EXPECTED UPDATES.\n{failures} FAILURES.')
