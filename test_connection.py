@@ -2,7 +2,7 @@ import authenticate_with_msal
 from requests.utils import get_encoding_from_headers
 
 # Parameters
-data_to_write = "env_iony_sandbox.json"
+data_to_write = "iony_sandbox.json"
 
 
 # a test request to the URI to get data

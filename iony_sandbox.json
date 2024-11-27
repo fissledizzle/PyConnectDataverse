@@ -1,0 +1,7 @@
+{
+    "clientID": "dd566657-78ac-40a2-af21-85a1587a0f34",
+    "tenantID": "97d21c16-f8b3-4a83-9761-0e139a06b348",
+    "environmentURI": "https://org36a865dc.crm16.dynamics.com/",
+    "authorityBase": "https://login.microsoftonline.com/",
+    "scopeSuffix": "user_impersonation"
+}
